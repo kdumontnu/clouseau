@@ -1,48 +1,59 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-  	import { invoke } from '@tauri-apps/api/tauri'
-	import Chart from './Chart.svelte';
+  import { onDestroy } from 'svelte';
+  import { invoke } from '@tauri-apps/api/tauri';
+  import Chart from './Chart.svelte';
 
-	let frequency = 0.0;
+  let frequency = 0.0;
 
-	let last_time = window.performance.now();
+  let last_time = window.performance.now();
 
-	let frame: number;
-	
-	let cpus: string[] = [];
-	let chart: Chart[] = [];
+  let frame: number;
 
-	async function getCpuInfo() {
-		cpus = await invoke('cpu_info')
-  	}
+  let cpus: string[] = [];
+  let chart: Chart[] = [];
 
-	getCpuInfo();
+  async function getCpuInfo() {
+    cpus = await invoke('cpu_info');
+  }
 
-	let cpu_usage: number[] = []
+  getCpuInfo();
 
-	async function getCpuData() {
-		cpu_usage = await invoke('cpu_usage')
-  	}
+  let cpu_usage: number[] = [];
 
-	(function update() {
-		frame = requestAnimationFrame(update);
+  async function getCpuData() {
+    cpu_usage = await invoke('cpu_usage');
+  }
 
-		const time = window.performance.now();
-		frequency = (1000.0/(time - last_time));
+  (function update() {
+    frame = requestAnimationFrame(update);
 
-		last_time = time;
+    const time = window.performance.now();
+    frequency = 1000.0 / (time - last_time);
 
-    	getCpuData();
+    last_time = time;
 
-		cpu_usage.forEach((cpu, i) => {
-			chart[i].add_point({x: time, y: cpu});
-		});
-	})();
+    getCpuData();
 
-	onDestroy(() => {
-		cancelAnimationFrame(frame);
-	});
+    cpu_usage.forEach((cpu, i) => {
+      chart[i].add_point({ x: time, y: cpu });
+    });
+  })();
+
+  onDestroy(() => {
+    cancelAnimationFrame(frame);
+  });
 </script>
+
+<div>Frame: {frame} ({frequency.toFixed(1)}Hz)</div>
+<div>CPUs:</div>
+<ul>
+  {#each cpus as cpu, i}
+    <li>
+      <div>{cpu}: {cpu_usage[i]}</div>
+      <div class="chart-container"><Chart bind:this={chart[i]} /></div>
+    </li>
+  {/each}
+</ul>
 
 <style>
   .chart-container {
@@ -50,14 +61,3 @@
     height: 100px;
   }
 </style>
-
-<div>Frame: {frame} ({frequency.toFixed(1)}Hz)</div>
-<div>CPUs:</div>
-<ul>
-  {#each cpus as cpu, i}
-  <li>
-    <div>{cpu}: {cpu_usage[i]}</div>
-	<div class="chart-container"><Chart bind:this={chart[i]}/></div>
-  </li>
-  {/each}
-</ul>
