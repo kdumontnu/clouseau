@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
   import { invoke } from '@tauri-apps/api/tauri';
   import Chart from './Chart.svelte';
 
@@ -24,7 +23,8 @@
     cpu_usage = await invoke('cpu_usage');
   }
 
-  (function update() {
+  // Get cpu usage every 100ms
+  setTimeout(function update() {
     frame = requestAnimationFrame(update);
 
     const time = window.performance.now();
@@ -37,19 +37,15 @@
     cpu_usage.forEach((cpu, i) => {
       chart[i].add_point({ x: time, y: cpu });
     });
-  })();
-
-  onDestroy(() => {
-    cancelAnimationFrame(frame);
-  });
+  }, 100);
 </script>
 
 <div>Frame: {frame} ({frequency.toFixed(1)}Hz)</div>
 <div>CPUs:</div>
-<ul>
+<ul class="resource-list">
   {#each cpus as cpu, i}
     <li>
-      <div>{cpu}: {cpu_usage[i]}</div>
+      <div>{cpu}: {Math.round(cpu_usage[i] * 100) / 100}%</div>
       <div class="chart-container"><Chart bind:this={chart[i]} /></div>
     </li>
   {/each}
@@ -59,5 +55,10 @@
   .chart-container {
     width: 100%;
     height: 100px;
+  }
+  .resource-list {
+    list-style-type: none;
+    padding-left: 40px;
+    padding-right: 40px;
   }
 </style>
