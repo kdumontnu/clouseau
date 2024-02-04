@@ -1,29 +1,16 @@
-# create-svelte
+# Clouseau
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+<img src="./documents/images/Inspector_Clouseau_Animated.png" height="250" />
 
-## Creating a project
+Clouseau is an proof of concept using [Tauri](https://tauri.app/) with [Sveltekit](https://kit.svelte.dev/), [Layer Cake](https://layercake.graphics/) (charts), and [sysinfo](https://crates.io/crates/sysinfo) to create a simple, cross-platform resource monitor. The primary purpose is to learn about data and resource management in Tauri. 
 
-If you're seeing this, you've probably already done this step. Congrats!
+It's very much a work in progress, but PRs are welcome. 
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+<img src="./documents/images/App_Running.png" />
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Run `npm install` and `npm run dev` to start the application in development mode. You should see a Tauri app pop up once everything is built.
 
 ## Building
 
@@ -33,6 +20,10 @@ To create a production version of your app:
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Ideas and Next Steps (PRs Welcome)
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+- Improve error handling and clean up data types passed between front-end and back-end
+- Make unit tests and integration tests actually test something relevant
+- Improved styling
+- Add CI test & build
+- Investigate other methods to decrease performance overhead (eg. OpenGL render, tauri event stream, etc.)
