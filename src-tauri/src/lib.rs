@@ -7,15 +7,15 @@ use sysinfo::System;
 
 struct SystemInfo(Arc<Mutex<System>>);
 
-fn main() {
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
     tauri::Builder::default()
         .manage(SystemInfo(Arc::new(Mutex::new(System::new_all()))))
         .setup(|_app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = tauri::Manager::get_window(_app, "main").unwrap();
+                let window = tauri::Manager::get_webview_window(_app, "main").unwrap();
                 window.open_devtools();
-                window.close_devtools();
             }
             Ok(())
         })
